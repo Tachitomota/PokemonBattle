@@ -13,7 +13,7 @@ public class BattleManager : MonoBehaviour
     private UnityEvent _onBattleStarted;
     [SerializeField]
     private UnityEvent _onBattleEnd;
-    private Coroutine _battleCoruotine;
+    private Coroutine _battleCoroutine;
 
     public void AddFighter (Fighter fighter)
     {
@@ -27,36 +27,52 @@ public class BattleManager : MonoBehaviour
     public void RemoverFighter(Fighter fighter)
     {
         _fighters.Remove(fighter);
-        StopCoroutine(_battleCoruotine);
+        if (_battleCoroutine != null)
+        {
+            StopCoroutine(_battleCoroutine);
+        }
+    }
+
+    private void InitializeFighters()
+    {
+        foreach (var fighter in _fighters)
+        {
+            fighter.InitializeFighter();
+        }
+
     }
 
     public void StartBattle()
     {
-        _battleCoruotine = StartCoroutine(BattleCoroutine());
+        InitializeFighters();
+        _battleCoroutine = StartCoroutine(BattleCoroutine());
+
     }
 
     private IEnumerator BattleCoroutine()
     {
         _onBattleStarted?.Invoke();
-        while (_fighters.Count != _fightersNeededToStart)
+        while (_fighters.Count > 1)
         {
             Fighter attacker = _fighters[Random.Range(0, _fighters.Count)];
             Fighter defender = _fighters[Random.Range(0, _fighters.Count)];
-            attacker.transform.LookAt(defender.transform);
-            defender.transform.LookAt(attacker.transform);
             while (defender == attacker)
             {
                 defender = _fighters[Random.Range(0, _fighters.Count)];
             }
+            attacker.transform.LookAt(defender.transform);
+            defender.transform.LookAt(attacker.transform);
             Attack attack = attacker.AttackData.attacks[Random.Range(0, attacker.AttackData.attacks.Length)];
             float damage = Random.Range(attack.minDamage, attack.maxDamage);
             attacker.CharacterAnimator.Play(attack.animationName);
+            SoundManager.instance.Play(attack.soundName);
             yield return new WaitForSeconds(attack.attackDuration);
             defender.Health.TakeDamage(damage);
             if (defender.Health.CurrentHealth <= 0)
             {
                 RemoverFighter(defender);
             }
+            yield return new WaitForSeconds(2f);
         }
         _onBattleEnd?.Invoke();
     }
