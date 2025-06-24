@@ -19,9 +19,17 @@ MonoBehaviour:
     attackDuration: 2
     animationName: Ataque
     soundName: 
+    particlesPrefab: {fileID: 4021103657954561961, guid: 5c755f9bc5253ea418e919994537dcc7,
+      type: 3}
+    hitParticlesPrefab: {fileID: 2504214343621411470, guid: 3ed0d324122d7b24eaec75c55c74aafc,
+      type: 3}
   - attackName: Rugido
     minDamage: 10
-    maxDamage: 20
+    maxDamage: 30
     attackDuration: 2
     animationName: Ataque2
     soundName: 
+    particlesPrefab: {fileID: 8771972552311404799, guid: bbf9e36a48d6c5648a13889afab076fd,
+      type: 3}
+    hitParticlesPrefab: {fileID: 2504214343621411470, guid: 3ed0d324122d7b24eaec75c55c74aafc,
+      type: 3}
