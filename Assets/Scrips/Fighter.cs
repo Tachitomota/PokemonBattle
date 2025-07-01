@@ -5,7 +5,7 @@ public class Fighter : MonoBehaviour
 {
     [SerializeField]
     private string _fighterName;
-    public string fighterName => _fighterName;
+    public string FighterName => _fighterName;
     [SerializeField]
     private AttackData _attackData;
     public AttackData AttackData => _attackData;
@@ -17,6 +17,12 @@ public class Fighter : MonoBehaviour
     public Animator CharacterAnimator => _characterAnimator;
     [SerializeField]
     private UnityEvent _onInitialize;
+    [SerializeField]
+    private string _winAnimationName;
+    public string WinAnimationName => _winAnimationName;
+    [SerializeField]
+    private string _winSoundName;
+    public string WinSoundName => _winSoundName;
     public void InitializeFighter()
     {
         _onInitialize?.Invoke();

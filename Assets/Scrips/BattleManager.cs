@@ -18,8 +18,9 @@ public class BattleManager : MonoBehaviour
     private Coroutine _battleCoroutine;
     private DamageTarget _damageTarget = new DamageTarget();
 
-    public void AddFighter (Fighter fighter)
+    public void AddFighter(Fighter fighter)
     {
+        FrameText.Instance.ShowText(fighter.FighterName + "has joined the battle!");
         _fighters.Add(fighter);
         if (_fighters.Count >= _fightersNeededToStart)
         {
@@ -30,7 +31,7 @@ public class BattleManager : MonoBehaviour
     public void RemoverFighter(Fighter fighter)
     {
         _fighters.Remove(fighter);
-        if (_battleCoroutine != null)
+        if (_battleCoroutine != null && _fighters.Count == 1)
         {
             StopCoroutine(_battleCoroutine);
         }
@@ -71,18 +72,30 @@ public class BattleManager : MonoBehaviour
             SoundManager.instance.Play(attack.soundName);
             GameObject attackParticles = Instantiate(attack.particlesPrefab, attacker.transform.position, Quaternion.identity);
             attackParticles.transform.SetParent(attacker.transform);
+            FrameText.Instance.ShowText(attacker.FighterName + "Attack with" + attack.attackName);
             yield return new WaitForSeconds(attack.attackDuration);
             GameObject hitParticles = Instantiate(attack.hitParticlesPrefab, defender.transform.position, Quaternion.identity);
             hitParticles.transform.SetParent(defender.transform);
             _damageTarget.SetDamageTarget(defender.transform, damage);
             defender.Health.TakeDamage(_damageTarget);
-        
             if (defender.Health.CurrentHealth <= 0)
             {
-                RemoverFighter(defender);
+                _fighters.Remove(defender);
             }
             yield return new WaitForSeconds(2f);
         }
         _onBattleEnd?.Invoke();
+        WinBattle(_fighters[0]);
     }
+
+    private void WinBattle(Fighter winner)
+    {
+        FrameText.Instance.ShowText(winner.FighterName + "win this battle");
+        winner.CharacterAnimator.Play(winner.WinAnimationName);
+        SoundManager.instance.Play(winner.WinSoundName);
+        winner.transform.LookAt(Camera.main.transform);
+        _onBattleEnd?.Invoke();
+        _battleCoroutine = null;
+    }
+
 }
