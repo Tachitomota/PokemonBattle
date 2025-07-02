@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System;
-
 public class FrameText : MonoBehaviour
 {
     [SerializeField]
@@ -11,7 +10,6 @@ public class FrameText : MonoBehaviour
     private float _timeBetweenLetters = 0.05f;
     [SerializeField]
     private float _timeToDisappear = 1f;
-    [SerializeField]
     private Animator _animator;
     [SerializeField]
     private string _showTextAnimationName = "ShowText";
@@ -19,7 +17,7 @@ public class FrameText : MonoBehaviour
     private string _hideTextAnimationName = "HideText";
     private string _fullText;
     private Coroutine _showTextCoroutine;
-    public static FrameText Instance{get; private set;}
+    public static FrameText Instance { get; private set; }
     private void Awake()
     {
         if (Instance == null)
@@ -31,9 +29,8 @@ public class FrameText : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-         
+        _animator = GetComponent<Animator>();
     }
-
     public void StopText(bool stopAnimation = false)
     {
         if (_showTextCoroutine != null)
@@ -44,11 +41,13 @@ public class FrameText : MonoBehaviour
         _text.text = "";
         if (stopAnimation)
         {
-            _animator.Play(_hideTextAnimationName, 0 ,0f);
+            _animator.Play(_hideTextAnimationName, 0, 0f);
+            SoundManager.instance.Play("Desaparece");
         }
     }
     public void ShowText(string text)
     {
+        SoundManager.instance.Play("Aparece");
         StopText();
         _animator.Play(_showTextAnimationName, 0, 0f);
         _showTextCoroutine = StartCoroutine(ShowTextCoroutine(text));
@@ -64,7 +63,6 @@ public class FrameText : MonoBehaviour
         }
         yield return new WaitForSeconds(_timeToDisappear);
         _showTextCoroutine = null;
-        _animator.Play(_hideTextAnimationName, 0, 0f);
+        _animator.Play(_hideTextAnimationName, 0 , 0f);
     }
-
 }
